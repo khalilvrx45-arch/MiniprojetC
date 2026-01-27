@@ -5,18 +5,13 @@
 #include "fonction.h"
 #define MAX_MACHINES 100
 #define MAX_CLIENTS 100
-int prochain_id_pokemon = 1;
+/*int prochain_id_pokemon = 1;
 int prochain_id_machine = 1;
 int prochain_id_commande = 1;
 /*uintptr_t generate_id(void *ptr){
     return (uintptr_t)ptr;
 }*/
-void Afficher_les_pokemons(Pokemon tab[], int nb_pokemon){
-    for(int j=0;j<nb_pokemon;j++){
-        printf("pokenom n%d: %d",j,tab[j].identifiant);
-        printf("Nom: %s\n", tab[j].nom);
-    }
-}
+
 void Afficher_Pokemon(Pokemon tab[], int nb_pokemon, int id) {
 
     for (int i = 0; i < nb_pokemon; i++) {
@@ -45,10 +40,9 @@ void Afficher_Pokemon(Pokemon tab[], int nb_pokemon, int id) {
             }
             printf("======================\n");
             return;
-
         }
     }
-    printf("Pokémon avec ID %d non trouve.\n", id);
+    printf("Pokemon avec ID %d non trouve.\n", id);
      // Pokémon non trouvé
 }
 void Afficher_tous_pokemons(Pokemon tab[], int nb_pokemon) {
@@ -61,19 +55,22 @@ void Ajouter_Pokemon(Pokemon pokemons[], int *nb_pokemons, int max_pokemons) {
     // Vérifier si le tableau est plein
     if (*nb_pokemons >= max_pokemons) {
         printf("Erreur : Le tableau de Pokemon est plein (capacite max: %d)\n", max_pokemons);
+        return;
     }
+
+
 
     // Créer un nouveau Pokémon
     Pokemon nouveau_pokemon;
 
     // Générer l'identifiant automatiquement
     nouveau_pokemon.identifiant = prochain_id_pokemon++;
-    
+
     // Vider le buffer avant la saisie
     while (getchar() != '\n');
     // Saisie du nom
     printf("Entrez le nom du Pokemon (max 49 caracteres) : ");
-    scanf(" %s\n", nouveau_pokemon.nom);
+    scanf(" %s", nouveau_pokemon.nom);
 
     // Saisie du coût unitaire
     do {
@@ -83,9 +80,9 @@ void Ajouter_Pokemon(Pokemon pokemons[], int *nb_pokemons, int max_pokemons) {
             printf("Erreur : Le coût doit etre positif.\n");
             while (getchar() != '\n');
             continue;
-        }
-        
-       
+         }
+
+
     } while (nouveau_pokemon.cout_unitaire <= 0);
 
     // Saisie du type
@@ -359,13 +356,76 @@ void Supprimer_Pokemon(int id, Pokemon tab[], int *nb_pokemons) {
         (*nb_pokemons)--;
     }
 }
-void Afficher_commandes(Commande com) {
-    printf("L'identifiant de cette commandes est : %d\n",com.identifiant);
-    printf("Cette commande est attribuee a : %s de matricule : %d\n",com.client->nom,com.client->matricule);
-    printf("L'identifant du Pokemon commande est : %d\n",com.pokemon_commande->identifiant);
-    printf("La quantite commande est : %d\n",com.quantite);
-    printf("Cette commande a ete effectuee le : %s",ctime(&com.date_emission));
-    printf("Cette commande est en %s",com.etat);
+int Afficher_commande_par_id(Commande commandes[], int nb_commandes, int id) {
+    for (int i = 0; i < nb_commandes; i++) {
+        if (commandes[i].identifiant == id) {
+            printf("\n═══════════════════════════════════════\n");
+            printf("        COMMANDE ID: %d\n", id);
+            printf("═══════════════════════════════════════\n");
+
+            printf("ID: %d\n", commandes[i].identifiant);
+
+            // Informations client
+            if (commandes[i].client != NULL) {
+                printf("Client:\n");
+                printf("  Nom: %s\n", commandes[i].client->nom);
+                printf("  Matricule: %s\n", commandes[i].client->matricule);
+            } else {
+                printf("Client: Non specifie\n");
+            }
+
+            // Informations Pokémon
+            if (commandes[i].pokemon_commande != NULL) {
+                printf("Pokemon commande:\n");
+                printf("  Nom: %s\n", commandes[i].pokemon_commande->nom);
+                printf("  ID: %d\n", commandes[i].pokemon_commande->identifiant);
+                printf("  Cout unitaire: %.2f\n", commandes[i].pokemon_commande->cout_unitaire);
+
+                printf("  Type: ");
+                switch (commandes[i].pokemon_commande->type) {
+                    case ELECTRIQUE: printf("Electrique\n"); break;
+                    case FEU: printf("Feu\n"); break;
+                    case EAU: printf("Eau\n"); break;
+                    case PLANTE: printf("Plante\n"); break;
+                    default: printf("Inconnu\n");
+                }
+            } else {
+                printf("Pokemon: Non specifie\n");
+            }
+
+            printf("Quantité: %d\n", commandes[i].quantite);
+            printf("Coût total: %.2f\n",
+                   commandes[i].pokemon_commande != NULL ?
+                   commandes[i].quantite * commandes[i].pokemon_commande->cout_unitaire : 0);
+
+            // Conversion de la date
+            char date_str[100];
+            strftime(date_str, sizeof(date_str), "%A %d %B %Y à %H:%M:%S",
+                     localtime(&commandes[i].date_emission));
+            printf("Date d'emission: %s\n", date_str);
+
+            printf("Etat: ");
+            switch (commandes[i].etat) {
+                case EN_ATTENTE:
+                    printf("En attente\n");
+                    break;
+                case EN_COURS:
+                    printf("En cours\n");
+                    break;
+                case REALISEE:
+                    printf("Realisee\n");
+                    break;
+                default:
+                    printf("Inconnu\n");
+            }
+
+            printf("═══════════════════════════════════════\n");
+            return 1;
+        }
+    }
+
+    printf("Commande avec l'ID %d non trouvee.\n", id);
+    return 0;
 }
 void Ajouter_Commande(Commande commandes[], int *nb_commandes, int capacite, Client *client ,Pokemon *pokemon, int quantite){
     printf("====Ajouter une commande====\n");
@@ -696,4 +756,3 @@ void supprimerMachine(Machine machines[], int* nbMachines) {
     (*nbMachines)--;
     printf("\nMachine supprimee avec succes!\n");
 }
-
