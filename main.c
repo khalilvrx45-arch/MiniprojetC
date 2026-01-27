@@ -8,6 +8,9 @@
 
 int main()
 {
+    int prochain_id_pokemon = 1;
+    int prochain_id_machine = 1;
+    int prochain_id_commande = 1;
     Pokemon tabPokemon[MAX_POKEMON];
     int nb_Pokemon = 0;
 
@@ -62,6 +65,8 @@ int main()
             case 5:
                 printf("Retour au menu principal...\n");
                 break;
+            case 6:
+                Afficher_tous_pokemons(tabPokemon,nb_Pokemon);
         }
         break;
 
