@@ -37,15 +37,17 @@ int main()
     case 1:
         printf("==== GERER POKEMON =====\n");
         printf("1. Ajouter un Pokemon\n");
-        printf("2. Afficher les Pokemons\n");
+        printf("2. Afficher un Pokemon\n");
         printf("3. Modifier un Pokemon\n");
         printf("4. Supprimer un Pokemon\n");
-        printf("5. Revenir au menu precedent\n");
+        printf("5. Afficher les Pokemons\n");
         scanf("%d",&sous_choix);
         switch (sous_choix) {
             case 1 :
-                 Ajouter_Pokemon(tabPokemon, &nb_Pokemon, MAX_POKEMON);
-                 break;
+                int id;
+                printf("Donner l'identifiant de la commande: ");
+                scanf("%d",&id);
+                int Afficher_commande_par_id(tabCommande,nb_Commande,id);
             case 2 : {
                 int id;
                 printf("Donner l'id de pokemon a cherche : ");
@@ -63,10 +65,11 @@ int main()
                 Supprimer_Pokemon(id,tabPokemon,&nb_Pokemon);
             }
             case 5:
-                printf("Retour au menu principal...\n");
+                Afficher_tous_pokemons(tabPokemon,nb_Pokemon);
                 break;
             case 6:
-                Afficher_tous_pokemons(tabPokemon,nb_Pokemon);
+                printf("Retour au menu principal...\n");
+                break;
         }
         break;
 
@@ -99,4 +102,5 @@ int main()
 
     }
 }
+
 
