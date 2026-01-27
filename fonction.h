@@ -4,7 +4,9 @@
 #include <time.h>
 #define MAX_MACHINES 100
 #define MAX_CLIENTS 100
-
+extern int prochain_id_pokemon;
+extern int prochain_id_machine;
+extern int prochain_id_commande;
 typedef enum {
     ELECTRIQUE,
     FEU,
@@ -27,15 +29,15 @@ typedef enum {
 
 
 typedef struct {
-    float solde;  // Solde actuel de la caisse (initialisé à 1000 pièces)
+    float solde;  // Solde actuel de la caisse (initialisÃ© Ã  1000 piÃ¨ces)
 } Caisse;
 
 
 typedef struct  {
-    int identifiant;           // Généré automatiquement (auto-incrémenté)
-    char nom[50];              // Nom du Pokémon (ex: "Pikachu", "Salamèche")
-    float cout_unitaire;       // Prix de vente ou coût de fabrication
-    TypePokemon type;          // Type du Pokémon (optionnel)
+    int identifiant;           // GÃ©nÃ©rÃ© automatiquement (auto-incrÃ©mentÃ©)
+    char nom[50];              // Nom du PokÃ©mon (ex: "Pikachu", "SalamÃ¨che")
+    float cout_unitaire;       // Prix de vente ou coÃ»t de fabrication
+    TypePokemon type;          // Type du PokÃ©mon (optionnel)
 }Pokemon;
 struct Commande;
 typedef struct Commande Commande;
@@ -46,16 +48,16 @@ struct Client {
     char matricule[20];         // Identifiant unique du client
     char nom[100];              // Nom du client
     Commande** liste_commandes; // Tableau dynamique de pointeurs vers commandes
-    int nb_commandes;           // Nombre de commandes passées
-    int capacite_commandes;     // Capacité du tableau (pour gestion dynamique)
+    int nb_commandes;           // Nombre de commandes passÃ©es
+    int capacite_commandes;     // CapacitÃ© du tableau (pour gestion dynamique)
 };
 struct Commande  {
-    int identifiant;              // Généré automatiquement
+    int identifiant;              // GÃ©nÃ©rÃ© automatiquement
     Client* client;               // Pointeur vers le client
-    Pokemon* pokemon_commande;    // Pokémon commandé
-    int quantite;                 // Nombre de figurines demandées
+    Pokemon* pokemon_commande;    // PokÃ©mon commandÃ©
+    int quantite;                 // Nombre de figurines demandÃ©es
     time_t date_emission;         // Date et heure de la commande (time.h)
-    EtatCommande etat;            // État actuel de la commande
+    EtatCommande etat;            // Ã‰tat actuel de la commande
 };
 // 2.2.4 Les Clients
 
@@ -63,22 +65,19 @@ struct Commande  {
 typedef struct {
     int identifiant;                    // Identifiant unique de la machine
     char nom[50];                       // Nom de la machine
-    Pokemon* pokemon_produit;           // Pointeur vers le Pokémon produit
+    Pokemon* pokemon_produit;           // Pointeur vers le PokÃ©mon produit
     int temps_production;               // Temps pour produire 1 figurine (en minutes)
-    int max_figurines_avant_maintenance; // Capacité avant maintenance obligatoire
-    int compteur_figurines;             // Nombre de figurines produites depuis dernière maintenance
-    float cout_maintenance;             // Coût d'une opération de maintenance
-    EtatMachine etat;                   // État actuel de la machine
+    int max_figurines_avant_maintenance; // CapacitÃ© avant maintenance obligatoire
+    int compteur_figurines;             // Nombre de figurines produites depuis derniÃ¨re maintenance
+    float cout_maintenance;             // CoÃ»t d'une opÃ©ration de maintenance
+    EtatMachine etat;                   // Ã‰tat actuel de la machine
     Commande* commande_en_cours;        // Pointeur vers la commande en cours (NULL si aucune)
-    time_t date_disponibilite;          // Date/heure de disponibilité (optionnel)
+    time_t date_disponibilite;          // Date/heure de disponibilitÃ© (optionnel)
 } Machine;
 
-
-extern int prochain_id_pokemon;
-extern int prochain_id_machine;
-extern int prochain_id_commande;
 const char* type_to_string(TypePokemon type);
 /*les fonctions des pokemons*/
+void Afficher_tous_pokemons(Pokemon tab[], int nb_pokemon);
 void Afficher_Pokemon(Pokemon tab[], int nb_pokemon, int id);
 void Ajouter_Pokemon(Pokemon pokemons[], int *nb_pokemons, int max_pokemons);
 void Modifier_Pokemon(Pokemon pokemons[], int nb_pokemons);
