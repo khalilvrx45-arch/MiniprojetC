@@ -8,9 +8,9 @@
 int prochain_id_pokemon = 1;
 int prochain_id_machine = 1;
 int prochain_id_commande = 1;
-uintptr_t generate_id(void *ptr){
+/*uintptr_t generate_id(void *ptr){
     return (uintptr_t)ptr;
-}
+}*/
 void Afficher_les_pokemons(Pokemon tab[], int nb_pokemon){
     for(int j=0;j<nb_pokemon;j++){
         printf("pokenom n%d: %d",j,tab[j].identifiant);
@@ -43,11 +43,19 @@ void Afficher_Pokemon(Pokemon tab[], int nb_pokemon, int id) {
                 default:
                     printf("Inconnu\n");
             }
+            printf("======================\n");
+            return;
 
         }
     }
     printf("Pokémon avec ID %d non trouve.\n", id);
      // Pokémon non trouvé
+}
+void Afficher_tous_pokemons(Pokemon tab[], int nb_pokemon) {
+    printf("\n=== LISTE DE TOUS LES POKEMONS (%d) ===\n", nb_pokemon);
+    for (int i = 0; i < nb_pokemon; i++) {
+        printf("Index %d: ID=%d, Nom=%s\n", i, tab[i].identifiant, tab[i].nom);
+    }
 }
 void Ajouter_Pokemon(Pokemon pokemons[], int *nb_pokemons, int max_pokemons) {
     // Vérifier si le tableau est plein
@@ -60,7 +68,9 @@ void Ajouter_Pokemon(Pokemon pokemons[], int *nb_pokemons, int max_pokemons) {
 
     // Générer l'identifiant automatiquement
     nouveau_pokemon.identifiant = prochain_id_pokemon++;
-
+    
+    // Vider le buffer avant la saisie
+    while (getchar() != '\n');
     // Saisie du nom
     printf("Entrez le nom du Pokemon (max 49 caracteres) : ");
     scanf(" %s\n", nouveau_pokemon.nom);
@@ -71,8 +81,11 @@ void Ajouter_Pokemon(Pokemon pokemons[], int *nb_pokemons, int max_pokemons) {
         scanf("%f", &nouveau_pokemon.cout_unitaire);
         if (nouveau_pokemon.cout_unitaire <= 0) {
             printf("Erreur : Le coût doit etre positif.\n");
+            while (getchar() != '\n');
+            continue;
         }
-        while (getchar() != '\n');
+        
+       
     } while (nouveau_pokemon.cout_unitaire <= 0);
 
     // Saisie du type
@@ -683,3 +696,4 @@ void supprimerMachine(Machine machines[], int* nbMachines) {
     (*nbMachines)--;
     printf("\nMachine supprimee avec succes!\n");
 }
+
