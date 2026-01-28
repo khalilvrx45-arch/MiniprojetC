@@ -84,10 +84,10 @@ void Modifier_Pokemon(Pokemon pokemons[], int nb_pokemons);
 void Supprimer_Pokemon(int id, Pokemon tab[], int *nb_pokemons);
 void Afficher_les_pokemons(Pokemon tab[],int nb_Pokemon);
 /*les fonctions des commandes*/
-void Afficher_commandes(Commande Com);
+int Afficher_commande_par_id(Commande commandes[], int nb_commandes, int id);
 void Ajouter_Commande(Commande commandes[], int *nb_commandes, int capacite, Client *client ,Pokemon *pokemon, int quantite);
 int Modifier_Commande(Commande commandes[], int *nb_commandes, int id_commande, Client *nouveau_client, Pokemon *nouveau_pokemon, int nouvelle_quantite, EtatCommande nouvel_etat);
-int Supprimer_commande(Commande commandes[], int *nb_commandes, int id_commande);
+int Supprimer_Commande(Commande commandes[], int *nb_commandes, int id_commande);
 /*les fonctions des machines*/
 void afficher_Machines(Machine machines[], int nbMachines);
 void ajouter_Machine(Machine machines[], int* nbMachines, Pokemon pokemons[], int nbPokemons);
