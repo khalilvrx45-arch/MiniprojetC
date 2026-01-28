@@ -44,10 +44,8 @@ int main()
         scanf("%d",&sous_choix);
         switch (sous_choix) {
             case 1 :
-                int id;
-                printf("Donner l'identifiant de la commande: ");
-                scanf("%d",&id);
-                int Afficher_commande_par_id(tabCommande,nb_Commande,id);
+                 Ajouter_Pokemon(tabPokemon, &nb_Pokemon, MAX_POKEMON);
+                 break;
             case 2 : {
                 int id;
                 printf("Donner l'id de pokemon a cherche : ");
@@ -96,11 +94,38 @@ int main()
         printf("3. Modifier une commande\n");
         printf("4. Supprimer une commande\n");
         printf("5. Revenir au menu precedent\n");
+        scanf("%d",&sous_choix);
+        switch (sous_choix) {
+            case 1 :
+                 int id;
+                 printf("Donner l'id de la commande a cherchee : ");
+                 scanf("%d",&id);
+                 Afficher_commande_par_id(tabCommande,nb_Commande,id);
+            case 2 : {
+                int quantite;
+                printf("Donner la quantite : ");
+                scanf("%d",&quantite);
+                Ajouter_Commande(tabCommande,&nb_Commande,MAX_COMMANDES,client,pokemon,quantite);
+                break;
+            }
+            case 3 :
+                Modifier_Pokemon(tabPokemon,nb_Pokemon);
+                break;
+            case 4 : {
+                int id;
+                printf("Donner l'id de la commande a supprimer\n");
+                scanf("%d",&id);
+                Supprimer_Commande(tabCommande,&nb_Commande,id);
+            }
+            case 5:
+                Afficher_tous_pokemons(tabPokemon,nb_Pokemon);
+                break;
+            case 6:
+                printf("Retour au menu principal...\n");
+                break;
+        }
         break;
 
-
-
-    }
 }
 
 
