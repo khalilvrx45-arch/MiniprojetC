@@ -34,26 +34,6 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="structures.h" />
-		<Unit filename="structures.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="pokemon.h" />
-		<Unit filename="pokemon.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="machine.h" />
-		<Unit filename="machine.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="client.h" />
-		<Unit filename="client.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="commande.h" />
-		<Unit filename="commande.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
