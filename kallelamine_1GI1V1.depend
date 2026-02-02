@@ -1,0 +1,98 @@
+# depslib dependency file v1.0
+1769686673 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\client.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"client.h"
+
+1769686615 c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\client.h
+	"structures.h"
+
+1769686862 c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\structures.h
+	<time.h>
+
+1769686561 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\commande.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"commande.h"
+
+1769686516 c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\commande.h
+	"structures.h"
+
+1769686448 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\machine.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"machine.h"
+
+1769686394 c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\machine.h
+	"structures.h"
+
+1769686394 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\main.c
+	<stdio.h>
+	<stdlib.h>
+	"structures.h"
+	"pokemon.h"
+	"machine.h"
+	"client.h"
+	"commande.h"
+
+1769686805 c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\pokemon.h
+	"structures.h"
+
+1769686805 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\pokemon.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"pokemon.h"
+
+1769794010 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1v1\structures.c
+	"structures.h"
+
+1769686673 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\client.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"client.h"
+
+1769686615 c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\client.h
+	"structures.h"
+
+1769885600 c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\structures.h
+	<time.h>
+
+1769686561 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\commande.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"commande.h"
+
+1769686516 c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\commande.h
+	"structures.h"
+
+1769686448 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\machine.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"machine.h"
+
+1769884385 c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\machine.h
+	"structures.h"
+
+1769686805 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\pokemon.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"pokemon.h"
+
+1769686805 c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\pokemon.h
+	"structures.h"
+
+1769794010 source:c:\users\asus\desktop\mp_c820\kallelamine_1gi1_v2- copie\structures.c
+	"structures.h"
+
