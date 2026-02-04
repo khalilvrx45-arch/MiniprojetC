@@ -3,191 +3,343 @@
 #include <string.h>
 #include "client.h"
 
-void afficher_Clients(Client clients[], int nbClients) {
-    if (nbClients == 0) {
+void afficher_Clients(liste_client* liste_clients) {
+    if (liste_clients == NULL) {
         printf("\n=== AUCUN CLIENT ENREGISTRE ===\n");
         return;
     }
 
-    printf("\n=============== LISTE DES CLIENTS (%d) ===============\n", nbClients);
+    int count = compter_clients(liste_clients);
+    printf("\n=============== LISTE DES CLIENTS (%d) ===============\n", count);
 
-    for (int i = 0; i < nbClients; i++) {
-        printf("\n--- Client #%d ---\n", i + 1);
-        printf("Matricule: %s\n", clients[i].matricule);
-        printf("Nom: %s\n", clients[i].nom);
-        printf("Nombre de commandes: %d\n", clients[i].nb_commandes);
-        printf("Capacite commandes: %d\n", clients[i].capacite_commandes);
+    liste_client* courant = liste_clients;
+    int numero = 1;
+
+    while (courant != NULL) {
+        printf("\n--- Client #%d ---\n", numero);
+        printf("Matricule: %s\n", courant->client.matricule);
+        printf("Nom: %s\n", courant->client.nom);
+
+        // Afficher le nombre de commandes du client
+        int nb_commandes = compter_commandes_client(&(courant->client));
+        printf("Nombre de commandes: %d\n", nb_commandes);
+
+        courant = courant->suivant;
+        numero++;
     }
+
     printf("\n====================================================\n");
 }
 
-void ajouter_Client(Client clients[], int* nbClients) {
-    if (*nbClients >= MAX_CLIENTS) {
-        printf("\nErreur: Nombre maximum de clients atteint!\n");
+void ajouter_Client(liste_client** liste_clients) {
+
+    liste_client* nouveau = (liste_client*)malloc(sizeof(liste_client));
+    if (nouveau == NULL) {
+        printf("Erreur d'allocation memoire!\n");
         return;
     }
 
-    Client nouveau_client;
+    Client* c = &(nouveau->client);
 
     printf("\n========== AJOUT D'UN CLIENT ==========\n");
 
     // Vider le buffer
     while (getchar() != '\n');
 
+    // Saisie du matricule
     printf("Matricule du client: ");
-    scanf("%19[^\n]", nouveau_client.matricule);
-
-    // Vérifier si le matricule existe déjà
-    for (int i = 0; i < *nbClients; i++) {
-        if (strcmp(clients[i].matricule, nouveau_client.matricule) == 0) {
-            printf("\nErreur: Ce matricule existe deja!\n");
-            return;
-        }
-    }
-
-    // Vider le buffer
+    scanf("%19[^\n]", c->matricule);
     while (getchar() != '\n');
 
-    printf("Nom du client: ");
-    scanf("%99[^\n]", nouveau_client.nom);
-
-    // Initialiser la capacité des commandes
-    printf("Capacite initiale de commandes (recommande: 10): ");
-    scanf("%d", &nouveau_client.capacite_commandes);
-
-    if (nouveau_client.capacite_commandes <= 0) {
-        nouveau_client.capacite_commandes = 10;
-    }
-
-    // Allouer de la mémoire pour la liste de commandes
-    nouveau_client.liste_commandes = (Commande**)malloc(nouveau_client.capacite_commandes * sizeof(Commande*));
-
-    if (nouveau_client.liste_commandes == NULL) {
-        printf("\nErreur: Allocation memoire echouee!\n");
+    // VÃ©rifier si le matricule existe dÃ©jÃ 
+    if (trouver_client_par_matricule(*liste_clients, c->matricule) != NULL) {
+        printf("Erreur: Un client avec le matricule '%s' existe deja!\n", c->matricule);
+        free(nouveau);
         return;
     }
 
-    nouveau_client.nb_commandes = 0;
+    // Saisie du nom
+    printf("Nom du client: ");
+    scanf("%99[^\n]", c->nom);
 
-    clients[*nbClients] = nouveau_client;
-    (*nbClients)++;
+    // Initialisation de la liste de commandes
+    c->liste_commandes = NULL;
 
-    printf("\nClient ajoute avec succes!\n");
+    // Ajout en tÃªte de liste
+    nouveau->suivant = *liste_clients;
+    *liste_clients = nouveau;
+
+    printf("\nClient '%s' ajoute avec succes! (Matricule: %s)\n", c->nom, c->matricule);
 }
 
-void modifier_Client(Client clients[], int nbClients) {
-    if (nbClients == 0) {
+void modifier_Client(liste_client* liste_clients) {
+    if (liste_clients == NULL) {
         printf("\nAucun client a modifier!\n");
         return;
     }
+
+    afficher_Clients(liste_clients);
 
     char matricule[20];
     printf("\nMatricule du client a modifier: ");
     scanf("%19s", matricule);
 
     // Rechercher le client
-    int index = -1;
-    for (int i = 0; i < nbClients; i++) {
-        if (strcmp(clients[i].matricule, matricule) == 0) {
-            index = i;
-            break;
-        }
-    }
+    Client* c = trouver_client_par_matricule(liste_clients, matricule);
 
-    if (index == -1) {
-        printf("\nClient introuvable!\n");
+    if (c == NULL) {
+        printf("\nClient avec le matricule '%s' introuvable!\n", matricule);
         return;
     }
 
-    printf("\n========== MODIFICATION CLIENT: %s ==========\n", matricule);
+    printf("\n========== MODIFICATION CLIENT '%s' ==========\n", c->matricule);
+    printf("Client actuel: %s\n", c->nom);
+
+    // Menu de modification
+    printf("\nQue voulez-vous modifier?\n");
+    printf("1. Nom\n");
+    printf("2. Matricule\n");
+    printf("3. Modifier tout\n");
+    printf("0. Annuler\n");
+    printf("Choix: ");
 
     int choix;
-    do {
-        printf("\nQue souhaitez-vous modifier?\n");
-        printf("1. Nom (actuel: %s)\n", clients[index].nom);
-        printf("2. Matricule (actuel: %s)\n", clients[index].matricule);
-        printf("3. Retour\n");
-        printf("Votre choix (1-3): ");
-        scanf("%d", &choix);
+    scanf("%d", &choix);
 
-        switch (choix) {
-            case 1:
-                // Vider le buffer
-                while (getchar() != '\n');
-                printf("Nouveau nom: ");
-                scanf("%99[^\n]", clients[index].nom);
-                printf("Nom modifie avec succes!\n");
-                break;
+    // Vider le buffer
+    while (getchar() != '\n');
 
-            case 2:
-                printf("Nouveau matricule: ");
-                char nouveau_matricule[20];
-                scanf("%19s", nouveau_matricule);
+    switch (choix) {
+        case 1:
+            printf("Nouveau nom (actuel: %s): ", c->nom);
+            scanf("%99[^\n]", c->nom);
+            printf("âœ“ Nom modifie!\n");
+            break;
 
-                // Vérifier si le nouveau matricule existe déjà
-                int existe = 0;
-                for (int i = 0; i < nbClients; i++) {
-                    if (i != index && strcmp(clients[i].matricule, nouveau_matricule) == 0) {
-                        existe = 1;
-                        break;
-                    }
+        case 2: {
+            char nouveau_matricule[20];
+            printf("Nouveau matricule (actuel: %s): ", c->matricule);
+            scanf("%19s", nouveau_matricule);
+
+            // VÃ©rifier si le nouveau matricule existe dÃ©jÃ 
+            if (strcmp(nouveau_matricule, c->matricule) != 0) {
+                if (trouver_client_par_matricule(liste_clients, nouveau_matricule) != NULL) {
+                    printf("Erreur: Ce matricule existe deja!\n");
+                    break;
                 }
-
-                if (existe) {
-                    printf("Ce matricule existe deja!\n");
-                } else {
-                    strcpy(clients[index].matricule, nouveau_matricule);
-                    printf("Matricule modifie avec succes!\n");
-                }
-                break;
-
-            case 3:
-                printf("Retour au menu...\n");
-                break;
-
-            default:
-                printf("Choix invalide!\n");
+                strcpy(c->matricule, nouveau_matricule);
+                printf("Matricule modifie!\n");
+            } else {
+                printf("Le matricule n'a pas change.\n");
+            }
+            break;
         }
-    } while (choix != 3);
+
+        case 3: {
+            printf("Nouveau nom (actuel: %s): ", c->nom);
+            scanf("%99[^\n]", c->nom);
+            while (getchar() != '\n');
+
+            char nouveau_matricule[20];
+            printf("Nouveau matricule (actuel: %s): ", c->matricule);
+            scanf("%19s", nouveau_matricule);
+
+            // VÃ©rifier si le nouveau matricule existe dÃ©jÃ 
+            if (strcmp(nouveau_matricule, c->matricule) != 0) {
+                if (trouver_client_par_matricule(liste_clients, nouveau_matricule) != NULL) {
+                    printf("Erreur: Ce matricule existe deja! Matricule non modifie.\n");
+                } else {
+                    strcpy(c->matricule, nouveau_matricule);
+                }
+            }
+
+            printf("\nClient entierement modifie!\n");
+            break;
+        }
+
+        case 0:
+            printf("Modification annulee.\n");
+            return;
+
+        default:
+            printf("Choix invalide!\n");
+            return;
+    }
+
+    printf("\nModifications enregistrees avec succes!\n");
 }
 
-void supprimer_Client(Client clients[], int* nbClients) {
-    if (*nbClients == 0) {
+void supprimer_Client(liste_client** liste_clients) {
+    if (*liste_clients == NULL) {
         printf("\nAucun client a supprimer!\n");
         return;
     }
+
+    afficher_Clients(*liste_clients);
 
     char matricule[20];
     printf("\nMatricule du client a supprimer: ");
     scanf("%19s", matricule);
 
-    // Rechercher le client
-    int index = -1;
-    for (int i = 0; i < *nbClients; i++) {
-        if (strcmp(clients[i].matricule, matricule) == 0) {
-            index = i;
-            break;
+    // Recherche et suppression
+    liste_client* courant = *liste_clients;
+    liste_client* precedent = NULL;
+
+    while (courant != NULL) {
+        if (strcmp(courant->client.matricule, matricule) == 0) {
+            // VÃ©rifier s'il a des commandes
+            int nb_commandes = compter_commandes_client(&(courant->client));
+
+            if (nb_commandes > 0) {
+                printf("\nAttention: Ce client a %d commande(s).\n", nb_commandes);
+                printf("Voulez-vous vraiment supprimer ce client? (o/n): ");
+                char reponse;
+                scanf(" %c", &reponse);
+
+                if (reponse != 'o' && reponse != 'O') {
+                    printf("Suppression annulee.\n");
+                    return;
+                }
+            }
+
+            // Confirmation
+            printf("\nClient '%s' (Matricule: %s) sera supprime.\n",
+                   courant->client.nom, matricule);
+            printf("Confirmer? (o/n): ");
+            char confirmation;
+            scanf(" %c", &confirmation);
+
+            if (confirmation != 'o' && confirmation != 'O') {
+                printf("Suppression annulee.\n");
+                return;
+            }
+
+            // LibÃ©rer les commandes du client
+            liberer_commandes_client(&(courant->client));
+
+            // Supprimer le nÅ“ud
+            if (precedent == NULL) {
+                // Suppression en tÃªte
+                *liste_clients = courant->suivant;
+            } else {
+                // Suppression au milieu ou fin
+                precedent->suivant = courant->suivant;
+            }
+
+            printf("\nâœ“ Client '%s' supprime avec succes!\n", courant->client.nom);
+            free(courant);
+            return;
         }
+
+        precedent = courant;
+        courant = courant->suivant;
     }
 
-    if (index == -1) {
-        printf("\nClient introuvable!\n");
+    printf("\nClient avec le matricule '%s' introuvable!\n", matricule);
+}
+
+
+Client* trouver_client_par_matricule(liste_client* liste_clients, const char* matricule) {
+    liste_client* courant = liste_clients;
+
+    while (courant != NULL) {
+        if (strcmp(courant->client.matricule, matricule) == 0) {
+            return &(courant->client);
+        }
+        courant = courant->suivant;
+    }
+
+    return NULL;
+}
+
+int compter_clients(liste_client* liste_clients) {
+    int count = 0;
+    liste_client* courant = liste_clients;
+
+    while (courant != NULL) {
+        count++;
+        courant = courant->suivant;
+    }
+
+    return count;
+}
+
+void ajouter_commande_au_client(Client* client, Commande* commande) {
+    if (client == NULL || commande == NULL) {
+        printf("Erreur: Client ou commande invalide!\n");
         return;
     }
 
-    printf("\nClient '%s' (Matricule: %s) sera supprime.\n",
-           clients[index].nom, matricule);
-
-    // Libérer la mémoire allouée pour la liste de commandes
-    if (clients[index].liste_commandes != NULL) {
-        free(clients[index].liste_commandes);
+    // CrÃ©er un nouveau nÅ“ud pour la liste de commandes du client
+    liste_commande* nouveau = (liste_commande*)malloc(sizeof(liste_commande));
+    if (nouveau == NULL) {
+        printf("Erreur d'allocation memoire pour la commande du client!\n");
+        return;
     }
 
-    // Décalage des éléments
-    for (int i = index; i < *nbClients - 1; i++) {
-        clients[i] = clients[i + 1];
+    // Copier la commande (pas de pointeur, on stocke la structure complÃ¨te)
+    nouveau->commande = *commande;
+
+    // Ajouter en tÃªte de la liste de commandes du client
+    nouveau->suivant = client->liste_commandes;
+    client->liste_commandes = nouveau;
+}
+
+
+int compter_commandes_client(Client* client) {
+    if (client == NULL) {
+        return 0;
     }
 
-    (*nbClients)--;
-    printf("\nClient supprime avec succes!\n");
+    int count = 0;
+    liste_commande* courant = client->liste_commandes;
+
+    while (courant != NULL) {
+        count++;
+        courant = courant->suivant;
+    }
+
+    return count;
+}
+
+void liberer_commandes_client(Client* client) {
+    if (client == NULL || client->liste_commandes == NULL) {
+        return;
+    }
+
+    liste_commande* courant = client->liste_commandes;
+    liste_commande* suivant;
+
+    while (courant != NULL) {
+        suivant = courant->suivant;
+        free(courant);
+        courant = suivant;
+    }
+
+    client->liste_commandes = NULL;
+}
+
+void liberer_liste_clients(liste_client** liste_clients) {
+    if (liste_clients == NULL || *liste_clients == NULL) {
+        return;
+    }
+
+    liste_client* courant = *liste_clients;
+    liste_client* suivant;
+    int count = 0;
+
+    while (courant != NULL) {
+        suivant = courant->suivant;
+
+        // LibÃ©rer les commandes du client
+        liberer_commandes_client(&(courant->client));
+
+        // LibÃ©rer le client
+        free(courant);
+        courant = suivant;
+        count++;
+    }
+
+    *liste_clients = NULL;
+    printf("  -> %d client(s) libere(s) de la memoire\n", count);
 }
