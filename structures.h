@@ -78,7 +78,7 @@ struct Client {
     char nom[100];
     liste_commande* liste_commandes;
     /*int nb_commandes;
-    int capacite_commandes*/ //Non necessaires avec les listes chainée;
+    int capacite_commandes*/ //Non necessaires avec les listes chainÃ©e;
 };
 
 struct Commande {
