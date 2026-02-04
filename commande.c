@@ -4,243 +4,377 @@
 #include <time.h>
 #include "commande.h"
 
-void afficher_Commandes(Commande commandes[], int nb_commandes) {
-    if (nb_commandes == 0) {
+float calculer_montant_commande(Commande* commande) {
+    if (commande == NULL || commande->pokemon_commande == NULL) {
+        return 0.0;
+    }
+
+    return commande->quantite * commande->pokemon_commande->cout_unitaire;
+}
+
+void afficher_Commandes(liste_commande* liste_commandes) {
+    if (liste_commandes == NULL) {
         printf("\n=== AUCUNE COMMANDE ENREGISTREE ===\n");
         return;
     }
 
-    printf("\n=============== LISTE DES COMMANDES (%d) ===============\n", nb_commandes);
+    int count = compter_commandes(liste_commandes);
+    printf("\n=============== LISTE DES COMMANDES (%d) ===============\n", count);
 
-    for (int i = 0; i < nb_commandes; i++) {
-        printf("\n--- Commande #%d ---\n", commandes[i].identifiant);
+    liste_commande* courant = liste_commandes;
+    int numero = 1;
 
-        if (commandes[i].client != NULL) {
-            printf("Client: %s (Matricule: %s)\n",
-                   commandes[i].client->nom,
-                   commandes[i].client->matricule);
-        } else {
-            printf("Client: Non specifie\n");
-        }
-
-        if (commandes[i].pokemon_commande != NULL) {
-            printf("Pokemon: %s (ID: %d)\n",
-                   commandes[i].pokemon_commande->nom,
-                   commandes[i].pokemon_commande->identifiant);
-        } else {
-            printf("Pokemon: Non specifie\n");
-        }
-
-        printf("Quantite: %d\n", commandes[i].quantite);
-
-        if (commandes[i].pokemon_commande != NULL) {
-            printf("Cout total: %.2f\n",
-                   commandes[i].quantite * commandes[i].pokemon_commande->cout_unitaire);
-        }
-
-        char date_str[100];
-        strftime(date_str, sizeof(date_str), "%d/%m/%Y %H:%M:%S",
-                 localtime(&commandes[i].date_emission));
-        printf("Date: %s\n", date_str);
-
-        printf("Etat: ");
-        switch (commandes[i].etat) {
-            case EN_ATTENTE: printf("En attente\n"); break;
-            case EN_COURS: printf("En cours\n"); break;
-            case REALISEE: printf("Realisee\n"); break;
-            default: printf("Inconnu\n");
-        }
+    while (courant != NULL) {
+        printf("\n--- Commande #%d ---\n", numero);
+        afficher_une_Commande(&(courant->commande));
+        courant = courant->suivant;
+        numero++;
     }
+
     printf("\n====================================================\n");
 }
 
-int Afficher_commande_par_id(Commande commandes[], int nb_commandes, int id) {
-    for (int i = 0; i < nb_commandes; i++) {
-        if (commandes[i].identifiant == id) {
-            printf("\n═══════════════════════════════════════\n");
-            printf("        COMMANDE ID: %d\n", id);
-            printf("═══════════════════════════════════════\n");
-
-            printf("ID: %d\n", commandes[i].identifiant);
-
-            if (commandes[i].client != NULL) {
-                printf("Client:\n");
-                printf("  Nom: %s\n", commandes[i].client->nom);
-                printf("  Matricule: %s\n", commandes[i].client->matricule);
-            } else {
-                printf("Client: Non specifie\n");
-            }
-
-            if (commandes[i].pokemon_commande != NULL) {
-                printf("Pokemon commande:\n");
-                printf("  Nom: %s\n", commandes[i].pokemon_commande->nom);
-                printf("  ID: %d\n", commandes[i].pokemon_commande->identifiant);
-                printf("  Cout unitaire: %.2f\n", commandes[i].pokemon_commande->cout_unitaire);
-                printf("  Type: %s\n", type_to_string(commandes[i].pokemon_commande->type));
-            } else {
-                printf("Pokemon: Non specifie\n");
-            }
-
-            printf("Quantité: %d\n", commandes[i].quantite);
-            printf("Coût total: %.2f\n",
-                   commandes[i].pokemon_commande != NULL ?
-                   commandes[i].quantite * commandes[i].pokemon_commande->cout_unitaire : 0);
-
-            char date_str[100];
-            strftime(date_str, sizeof(date_str), "%A %d %B %Y à %H:%M:%S",
-                     localtime(&commandes[i].date_emission));
-            printf("Date d'emission: %s\n", date_str);
-
-            printf("Etat: ");
-            switch (commandes[i].etat) {
-                case EN_ATTENTE: printf("En attente\n"); break;
-                case EN_COURS: printf("En cours\n"); break;
-                case REALISEE: printf("Realisee\n"); break;
-                default: printf("Inconnu\n");
-            }
-
-            printf("═══════════════════════════════════════\n");
-            return 1;
-        }
-    }
-
-    printf("Commande avec l'ID %d non trouvee.\n", id);
-    return 0;
-}
-
-void Ajouter_Commande(Commande commandes[], int *nb_commandes, int capacite,
-                      Client *client, Pokemon *pokemon, int quantite) {
-    printf("\n====Ajouter une commande====\n");
-
-    if (commandes == NULL || nb_commandes == NULL || client == NULL || pokemon == NULL) {
-        printf("Erreur : paramètres invalides\n");
+void afficher_une_Commande(Commande* commande) {
+    if (commande == NULL) {
+        printf("Commande invalide!\n");
         return;
     }
 
-    if (*nb_commandes >= capacite) {
-        printf("Erreur : tableau de commandes plein (capacité : %d)\n", capacite);
+    printf("ID: %d\n", commande->identifiant);
+
+    // Afficher le client
+    if (commande->client != NULL) {
+        printf("Client: %s (Matricule: %s)\n",
+               commande->client->nom,
+               commande->client->matricule);
+    } else {
+        printf("Client: Non defini\n");
+    }
+
+    // Afficher le Pokemon
+    if (commande->pokemon_commande != NULL) {
+        printf("Pokemon: %s (ID: %d, Prix unitaire: %.2f pieces)\n",
+               commande->pokemon_commande->nom,
+               commande->pokemon_commande->identifiant,
+               commande->pokemon_commande->cout_unitaire);
+    } else {
+        printf("Pokemon: Non defini\n");
+    }
+
+    printf("Quantite: %d\n", commande->quantite);
+
+    // Calculer et afficher le montant total
+    float montant = calculer_montant_commande(commande);
+    printf("Montant total: %.2f pieces\n", montant);
+
+    // Afficher la date d'émission
+    char date_str[80];
+    struct tm* timeinfo = localtime(&(commande->date_emission));
+    strftime(date_str, sizeof(date_str), "%d/%m/%Y %H:%M:%S", timeinfo);
+    printf("Date emission: %s\n", date_str);
+
+    // Afficher l'état
+    printf("Etat: ");
+    switch (commande->etat) {
+        case EN_ATTENTE:
+            printf("EN ATTENTE\n");
+            break;
+        case EN_COURS:
+            printf("EN COURS\n");
+            break;
+        case REALISEE:
+            printf("REALISEE\n");
+            break;
+        default:
+            printf("INCONNU\n");
+            break;
+    }
+}
+
+void ajouter_Commande(liste_commande** liste_commandes, Client* client,Pokemon* pokemon, int quantite) {
+    // Vérifications
+    if (client == NULL) {
+        printf("Erreur: Client invalide!\n");
+        return;
+    }
+
+    if (pokemon == NULL) {
+        printf("Erreur: Pokemon invalide!\n");
         return;
     }
 
     if (quantite <= 0) {
-        printf("Erreur : quantité invalide %d\n", quantite);
+        printf("Erreur: La quantite doit etre positive!\n");
         return;
     }
 
-    if (client->matricule[0] == '\0') {
-        printf("Erreur : client invalide\n");
+    //Créer le nouveau nœud
+    liste_commande* nouveau = (liste_commande*)malloc(sizeof(liste_commande));
+    if (nouveau == NULL) {
+        printf("Erreur d'allocation memoire!\n");
         return;
     }
 
-    if (pokemon->identifiant <= 0) {
-        printf("Erreur : Pokémon invalide\n");
-        return;
-    }
+    Commande* cmd = &(nouveau->commande);
 
-    Commande nouvelle_commande;
-    nouvelle_commande.identifiant = prochain_id_commande;
+    //Initialisation de la commande
+    cmd->identifiant = prochain_id_commande;
+    cmd->client = client;
+    cmd->pokemon_commande = pokemon;
+    cmd->quantite = quantite;
+    cmd->date_emission = time(NULL);
+    cmd->etat = EN_ATTENTE;
+
+    //Ajout en tête de liste
+    nouveau->suivant = *liste_commandes;
+    *liste_commandes = nouveau;
+
+    //Ajouter la commande à la liste du client
+    ajouter_commande_au_client(client, cmd);
+
     prochain_id_commande++;
-    nouvelle_commande.client = client;
-    nouvelle_commande.pokemon_commande = pokemon;
-    nouvelle_commande.quantite = quantite;
-    nouvelle_commande.date_emission = time(NULL);
-    nouvelle_commande.etat = EN_ATTENTE;
 
-    commandes[*nb_commandes] = nouvelle_commande;
-
-    int index = *nb_commandes;
-
-    if (client->liste_commandes != NULL) {
-        if (client->nb_commandes < client->capacite_commandes) {
-            client->liste_commandes[client->nb_commandes] = &commandes[index];
-            client->nb_commandes++;
-        } else {
-            printf("Avertissement : client a atteint sa capacité de commandes\n");
-        }
-    }
-
-    (*nb_commandes)++;
-    printf("Commande #%d ajoutée avec succès (total: %d)\n",
-           commandes[index].identifiant, *nb_commandes);
+    printf("\nCommande creee avec succes!\n");
+    printf("  ID: %d\n", cmd->identifiant);
+    printf("  Client: %s\n", client->nom);
+    printf("  Pokemon: %s x %d\n", pokemon->nom, quantite);
+    printf("  Montant: %.2f pieces\n", calculer_montant_commande(cmd));
 }
 
-void modifier_Commande(Commande commandes[], int *nb_commandes, int id_commande,
-                       Client *nouveau_client, Pokemon *nouveau_pokemon,
-                       int nouvelle_quantite, EtatCommande nouvel_etat) {
-    int index = -1;
-    for (int i = 0; i < *nb_commandes; i++) {
-        if (commandes[i].identifiant == id_commande) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index == -1) {
-        printf("Commande avec ID %d non trouvée.\n", id_commande);
+void modifier_Commande(liste_commande* liste_commandes) {
+    if (liste_commandes == NULL) {
+        printf("\nAucune commande a modifier!\n");
         return;
     }
 
-    if (nouveau_client != NULL) {
-        commandes[index].client = nouveau_client;
+    afficher_Commandes(liste_commandes);
+
+    int id;
+    printf("\nID de la commande a modifier: ");
+    scanf("%d", &id);
+
+    // Rechercher la commande
+    Commande* cmd = trouver_commande_par_id(liste_commandes, id);
+
+    if (cmd == NULL) {
+        printf("\nCommande ID %d introuvable!\n", id);
+        return;
     }
 
-    if (nouveau_pokemon != NULL) {
-        commandes[index].pokemon_commande = nouveau_pokemon;
-    }
+    printf("\n========== MODIFICATION COMMANDE ID: %d ==========\n", id);
+    afficher_une_Commande(cmd);
 
-    if (nouvelle_quantite > 0) {
-        commandes[index].quantite = nouvelle_quantite;
-    }
+    // Menu de modification
+    printf("\nQue voulez-vous modifier?\n");
+    printf("1. Quantite\n");
+    printf("2. Etat de la commande\n");
+    printf("3. Modifier tout\n");
+    printf("0. Annuler\n");
+    printf("Choix: ");
 
-    if (nouvel_etat >= EN_ATTENTE && nouvel_etat <= REALISEE) {
-        commandes[index].etat = nouvel_etat;
+    int choix;
+    scanf("%d", &choix);
 
-        if (nouvel_etat == REALISEE) {
-            printf("Commande %d marquée comme réalisée.\n", id_commande);
-        }
-    }
+    switch (choix) {
+        case 1: {
+            int nouvelle_quantite;
+            printf("Nouvelle quantite (actuelle: %d): ", cmd->quantite);
+            scanf("%d", &nouvelle_quantite);
 
-    printf("Commande %d modifiée avec succès.\n", id_commande);
-}
-
-int supprimer_Commande(Commande commandes[], int *nb_commandes, int id_commande) {
-    if (*nb_commandes == 0) {
-        printf("Aucune commande à supprimer.\n");
-        return 0;
-    }
-
-    int index = -1;
-    for (int i = 0; i < *nb_commandes; i++) {
-        if (commandes[i].identifiant == id_commande) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index == -1) {
-        printf("Commande avec ID %d non trouvée.\n", id_commande);
-        return 0;
-    }
-
-    if (commandes[index].client != NULL) {
-        Client *client = commandes[index].client;
-
-        for (int i = 0; i < client->nb_commandes; i++) {
-            if (client->liste_commandes[i]->identifiant == id_commande) {
-                for (int j = i; j < client->nb_commandes - 1; j++) {
-                    client->liste_commandes[j] = client->liste_commandes[j + 1];
-                }
-                client->nb_commandes--;
+            if (nouvelle_quantite <= 0) {
+                printf("Erreur: La quantite doit etre positive!\n");
                 break;
             }
+
+            cmd->quantite = nouvelle_quantite;
+            printf(" Quantite modifiee!\n");
+            printf("  Nouveau montant: %.2f pieces\n", calculer_montant_commande(cmd));
+            break;
         }
+
+        case 2: {
+            printf("\nEtats disponibles:\n");
+            printf("0. EN_ATTENTE\n");
+            printf("1. EN_COURS\n");
+            printf("2. REALISEE\n");
+            printf("Nouvel etat: ");
+
+            int nouvel_etat;
+            scanf("%d", &nouvel_etat);
+
+            if (nouvel_etat < 0 || nouvel_etat > 2) {
+                printf("Erreur: Etat invalide!\n");
+                break;
+            }
+
+            changer_etat_commande(cmd, (EtatCommande)nouvel_etat);
+            printf("✓ Etat modifie!\n");
+            break;
+        }
+
+        case 3: {
+            // Modifier quantité
+            int nouvelle_quantite;
+            printf("Nouvelle quantite (actuelle: %d): ", cmd->quantite);
+            scanf("%d", &nouvelle_quantite);
+
+            if (nouvelle_quantite > 0) {
+                cmd->quantite = nouvelle_quantite;
+            }
+
+            // Modifier état
+            printf("\nEtats disponibles:\n");
+            printf("0. EN_ATTENTE\n");
+            printf("1. EN_COURS\n");
+            printf("2. REALISEE\n");
+            printf("Nouvel etat: ");
+
+            int nouvel_etat;
+            scanf("%d", &nouvel_etat);
+
+            if (nouvel_etat >= 0 && nouvel_etat <= 2) {
+                changer_etat_commande(cmd, (EtatCommande)nouvel_etat);
+            }
+
+            printf("\nCommande entierement modifiee!\n");
+            break;
+        }
+
+        case 0:
+            printf("Modification annulee.\n");
+            return;
+
+        default:
+            printf("Choix invalide!\n");
+            return;
     }
 
-    for (int i = index; i < *nb_commandes - 1; i++) {
-        commandes[i] = commandes[i + 1];
+    printf("\n✓ Modifications enregistrees avec succes!\n");
+}
+
+void supprimer_Commande(liste_commande** liste_commandes) {
+    if (*liste_commandes == NULL) {
+        printf("\nAucune commande a supprimer!\n");
+        return;
     }
 
-    (*nb_commandes)--;
-    printf("Commande %d supprimée avec succès.\n", id_commande);
-    return 1;
+    afficher_Commandes(*liste_commandes);
+
+    int id;
+    printf("\nID de la commande a supprimer: ");
+    scanf("%d", &id);
+
+    // Recherche et suppression
+    liste_commande* courant = *liste_commandes;
+    liste_commande* precedent = NULL;
+
+    while (courant != NULL) {
+        if (courant->commande.identifiant == id) {
+            // Vérification de l'état
+            if (courant->commande.etat == EN_COURS) {
+                printf("\nAttention: Cette commande est en cours de traitement.\n");
+                printf("Voulez-vous vraiment la supprimer? (o/n): ");
+                char reponse;
+                scanf(" %c", &reponse);
+
+                if (reponse != 'o' && reponse != 'O') {
+                    printf("Suppression annulee.\n");
+                    return;
+                }
+            }
+
+            // Confirmation
+            printf("\nCommande #%d sera supprimee.\n", id);
+            printf("  Client: %s\n", courant->commande.client->nom);
+            printf("  Pokemon: %s x %d\n",
+                   courant->commande.pokemon_commande->nom,
+                   courant->commande.quantite);
+            printf("Confirmer? (o/n): ");
+            char confirmation;
+            scanf(" %c", &confirmation);
+
+            if (confirmation != 'o' && confirmation != 'O') {
+                printf("Suppression annulee.\n");
+                return;
+            }
+
+            // Supprimer le nœud
+            if (precedent == NULL) {
+                // Suppression en tête
+                *liste_commandes = courant->suivant;
+            } else {
+                // Suppression au milieu ou fin
+                precedent->suivant = courant->suivant;
+            }
+
+            printf("\n✓ Commande #%d supprimee avec succes!\n", id);
+            free(courant);
+            return;
+        }
+
+        precedent = courant;
+        courant = courant->suivant;
+    }
+
+    printf("\nCommande ID %d introuvable!\n", id);
+}
+
+
+Commande* trouver_commande_par_id(liste_commande* liste_commandes, int id) {
+    liste_commande* courant = liste_commandes;
+
+    while (courant != NULL) {
+        if (courant->commande.identifiant == id) {
+            return &(courant->commande);
+        }
+        courant = courant->suivant;
+    }
+
+    return NULL;
+}
+
+int compter_commandes(liste_commande* liste_commandes) {
+    int count = 0;
+    liste_commande* courant = liste_commandes;
+
+    while (courant != NULL) {
+        count++;
+        courant = courant->suivant;
+    }
+
+    return count;
+}
+
+int compter_commandes_par_etat(liste_commande* liste_commandes, EtatCommande etat) {
+    int count = 0;
+    liste_commande* courant = liste_commandes;
+
+    while (courant != NULL) {
+        if (courant->commande.etat == etat) {
+            count++;
+        }
+        courant = courant->suivant;
+    }
+
+    return count;
+}
+
+void liberer_liste_commandes(liste_commande** liste_commandes) {
+    if (liste_commandes == NULL || *liste_commandes == NULL) {
+        return;
+    }
+
+    liste_commande* courant = *liste_commandes;
+    liste_commande* suivant;
+    int count = 0;
+
+    while (courant != NULL) {
+        suivant = courant->suivant;
+        free(courant);
+        courant = suivant;
+        count++;
+    }
+
+    *liste_commandes = NULL;
+    printf("  -> %d commande(s) liberee(s) de la memoire\n", count);
 }
