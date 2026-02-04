@@ -28,7 +28,7 @@ void charger_pokemons_depuis_fichier(liste_pokemon** liste) {
 
         pokemon_temp.type = (TypePokemon)type_temp;
 
-        // Créer un nouveau nœud
+        // CrÃ©er un nouveau nÅ“ud
         liste_pokemon* nouveau = (liste_pokemon*)malloc(sizeof(liste_pokemon));
         if (nouveau == NULL) {
             printf("Erreur d'allocation memoire!\n");
@@ -42,7 +42,7 @@ void charger_pokemons_depuis_fichier(liste_pokemon** liste) {
 
         count++;
 
-        // Mettre à jour le prochain ID
+        // Mettre Ã  jour le prochain ID
         if (pokemon_temp.identifiant >= prochain_id_pokemon) {
             prochain_id_pokemon = pokemon_temp.identifiant + 1;
         }
@@ -71,7 +71,7 @@ void charger_clients_depuis_fichier(liste_client** liste) {
                   client_temp.matricule,
                   client_temp.nom) == 2) {
 
-        // Créer un nouveau nœud
+        // CrÃ©er un nouveau nÅ“ud
         liste_client* nouveau = (liste_client*)malloc(sizeof(liste_client));
         if (nouveau == NULL) {
             printf("Erreur d'allocation memoire!\n");
@@ -80,7 +80,7 @@ void charger_clients_depuis_fichier(liste_client** liste) {
         }
 
         nouveau->client = client_temp;
-        nouveau->client.liste_commandes = NULL;  // Les commandes seront chargées après
+        nouveau->client.liste_commandes = NULL;  // Les commandes seront chargÃ©es aprÃ¨s
         nouveau->suivant = *liste;
         *liste = nouveau;
 
@@ -131,7 +131,7 @@ void charger_machines_depuis_fichier(liste_machine** liste, liste_pokemon* liste
         machine_temp.commande_en_cours = NULL;
         machine_temp.date_disponibilite = 0;
 
-        // Créer un nouveau noeud
+        // CrÃ©er un nouveau noeud
         liste_machine* nouveau = (liste_machine*)malloc(sizeof(liste_machine));
         if (nouveau == NULL) {
             printf("Erreur d'allocation memoire!\n");
@@ -145,7 +145,7 @@ void charger_machines_depuis_fichier(liste_machine** liste, liste_pokemon* liste
 
         count++;
 
-        // Mettre à jour le prochain ID
+        // Mettre Ã  jour le prochain ID
         if (machine_temp.identifiant >= prochain_id_machine) {
             prochain_id_machine = machine_temp.identifiant + 1;
         }
@@ -225,7 +225,7 @@ void charger_commandes_depuis_fichier(liste_commande** liste, liste_client* list
 
         count++;
 
-        // Mettre à jour le prochain identifiant
+        // Mettre Ã  jour le prochain identifiant
         if (commande_temp.identifiant >= prochain_id_commande) {
             prochain_id_commande = commande_temp.identifiant + 1;
         }
