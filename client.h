@@ -1,14 +1,19 @@
 #ifndef CLIENT_H_INCLUDED
 #define CLIENT_H_INCLUDED
-
 #include "structures.h"
 
-#define MAX_CLIENTS 100
 
-// Client function prototypes
-void afficher_Clients(Client clients[], int nbClients);
-void ajouter_Client(Client clients[], int* nbClients);
-void modifier_Client(Client clients[], int nbClients);
-void supprimer_Client(Client clients[], int* nbClients);
+void afficher_Clients(liste_client* liste_clients);
+void ajouter_Client(liste_client** liste_clients);
+void modifier_Client(liste_client* liste_clients);
+void supprimer_Client(liste_client** liste_clients);
+Client* trouver_client_par_matricule(liste_client* liste_clients, const char* matricule);
+int compter_clients(liste_client* liste_clients);
+void ajouter_commande_au_client(Client* client, Commande* commande);
+int compter_commandes_client(Client* client);
+void liberer_commandes_client(Client* client);
+void liberer_liste_clients(liste_client** liste_clients);
+
+
 
 #endif // CLIENT_H_INCLUDED
