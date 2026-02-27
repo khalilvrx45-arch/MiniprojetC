@@ -5,3 +5,4 @@ MP-interface/
 *.depend
 *.layout
 raylib.dll
+*.md
