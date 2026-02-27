@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Dynamique2" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Dynamique2" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="C:/Users/ksibi/Downloads/raylib-5.5_win64_mingw-w64/raylib-5.5_win64_mingw-w64/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-lraylib -lgdi32 -lwinmm" />
+					<Add directory="C:/Users/ksibi/Downloads/raylib-5.5_win64_mingw-w64/raylib-5.5_win64_mingw-w64/lib" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Dynamique2" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="client.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="client.h" />
+		<Unit filename="commande.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="commande.h" />
+		<Unit filename="fichiers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fichiers.h" />
+		<Unit filename="machine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="machine.h" />
+		<Unit filename="gui_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pokemon.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pokemon.h" />
+		<Unit filename="stats.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stats.h" />
+		<Unit filename="structures.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="structures.h" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

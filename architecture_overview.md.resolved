@@ -1,0 +1,85 @@
+# Pokémon Factory Project Analysis
+
+This document provides a technical overview of the "Usine Pokémon" project, a C-based industrial simulation system.
+
+## 🏗️ Architecture Overview
+
+The project follows a modular design, separating data models, business logic, and persistence.
+
+### Core Modules
+| Module | Responsibility |
+| :--- | :--- |
+| **[main.c](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/main.c)** | Application lifecycle, user interface (menus), and the real-time automation loop. |
+| **[machine.c](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/machine.c)** | Production logic, maintenance simulation, and queue management. |
+| **[structures.h](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/structures.h)** | Definition of all data models and linked list types. |
+| **[commande.c](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/commande.c)** | Order lifecycle and client-order relations. |
+| **[fichiers.c](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/fichiers.c)** | Custom file-based persistence for all factory states. |
+
+---
+
+## ⚙️ Key Technical Features
+
+### 1. The Automation "Brain"
+In [main.c](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/main.c), the function [mettre_a_jour_machines](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/main.c#520-583) acts as a scheduler. It runs continuously in the main loop to:
+- Detect when a production run finishes.
+- Automatically collect revenue and update the `Caisse`.
+- Trigger the next order in the machine's queue or resume after maintenance.
+
+### 2. Predictive Industrial Pipeline
+The project implements a sophisticated production model:
+- **Queuing**: Machines can hold multiple orders in a `file_attente`.
+- **Maintenance Simulation**: [simuler_temps_et_compteur](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/machine.c#536-564) predicts the exact second of completion by calculating how many items can be produced before a mandatory pause.
+- **Smart Selection**: When assigning orders, the system automatically finds the least busy machine producing that specific Pokémon type.
+
+### 3. State Persistence
+Unlike simple CRUD apps, this project persists "volatile" data:
+- **[machines.txt](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/machines.txt)** stores the current production status, the time remaining, and even the list of queued order IDs (e.g., `ID1,ID2,ID3`).
+- **[restaurer_commandes_en_cours](file:///c:/Users/ksibi/Desktop/fac/1GI/C/rev%20info/dynamique%202/fichiers.c#11-67)** rebuilds the complex pointer network between machines and orders upon startup.
+
+---
+
+## 📈 Data Models
+
+```mermaid
+classDiagram
+    class Machine {
+        +int identifiant
+        +char nom[50]
+        +Pokemon* pokemon_produit
+        +int temps_production
+        +int max_figurines
+        +int compteur_figurines
+        +EtatMachine etat
+        +Commande* commande_en_cours
+        +liste_commande* file_attente
+    }
+    class Commande {
+        +int identifiant
+        +Client* client
+        +Pokemon* pokemon_commande
+        +int quantite
+        +EtatCommande etat
+    }
+    class Pokemon {
+        +int identifiant
+        +char nom[50]
+        +float cout_unitaire
+        +TypePokemon type
+    }
+    class Client {
+        +char matricule[20]
+        +char nom[100]
+    }
+    
+    Machine "1" -- "0..1" Commande : produces
+    Machine "1" -- "1" Pokemon : specialized in
+    Commande "1" -- "1" Client : belongs to
+    Commande "1" -- "1" Pokemon : requests
+```
+
+---
+
+## 💡 Observations
+- **Memory Management**: The project uses dynamic allocation for linked lists and properly handles cleanup during shutdown.
+- **UX**: The menu-driven interface is comprehensive, offering deep management of all factory aspects.
+- **Industrial Scale**: The jump from simple production to a "pipeline" with simulation suggests a significant evolution toward realistic manufacturing logic.

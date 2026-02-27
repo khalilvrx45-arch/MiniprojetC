@@ -1,0 +1,7 @@
+bin/
+obj/
+MP-interface/
+*.txt
+*.depend
+*.layout
+raylib.dll
